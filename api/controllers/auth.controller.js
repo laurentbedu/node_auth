@@ -1,5 +1,5 @@
 const BaseController = require("./base.controller");
-
+ 
 class AuthController extends BaseController {
 
     login = async (req) => {
