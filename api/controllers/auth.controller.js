@@ -33,6 +33,17 @@ class AuthController extends BaseController {
   renew = async (req) => {
     return "renew";
   };
+
+  getAuth = async (req) => {
+    const auth = req.cookies.auth;
+    if(auth){
+        const result = jwt.verify(auth, config.JWT_SECRET);
+        if(result){
+            return {result:true, role:result.role}
+        }
+    }
+    return {result:false, role:0}
+  }
 }
 
 module.exports = AuthController;
