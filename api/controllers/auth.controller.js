@@ -2,6 +2,7 @@ const BaseController = require("./base.controller");
 const UserService = require("../services/user.service");
 const bcrypt = require("bcrypt");
 const config = require('../configs/auth.config');
+const jwt = require('jsonwebtoken');
 
 class AuthController extends BaseController {
 
@@ -14,7 +15,9 @@ class AuthController extends BaseController {
     if(user){
         const result =  await bcrypt.compare(req.body.password, `${config.HASH_PREFIX + user.password}`);
         if(result){
-            return {email: user.email, role: user.role, token: "", result: true, message: "Bienvenue !"};
+            const {email, role} = user;
+            const token = jwt.sign({email, role}, config.JWT_SECRET, { expiresIn: '1d' });
+            return {email, role, token, result: true, message: "Bienvenue !"};
         }
         return {result: false, message: "Mot de passe incorrect !"};
     }
