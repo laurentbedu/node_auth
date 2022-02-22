@@ -28,7 +28,7 @@ class AuthRouter extends BaseRouter {
             const response = await this.controller.renew(req);
             res.json(response);
         });
-
+        // /auth
         this.router.get("/", async (req, res) => {
             const response = await this.controller.check(req);
             res.json(response);
