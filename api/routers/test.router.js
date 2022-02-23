@@ -9,16 +9,17 @@ class TestRouter extends BaseRouter {
 
     initalizeRoutes = () => {
         
-        this.router.get("/user", async (req, res) => {
-            res.json("user only");
+        this.router.get("/user", async (req, res, next) => {
+            next(this.controller.forUser);
         });
         
-        this.router.get("/admin", async (req, res) => {
-            res.json("admin only");
+        this.router.get("/admin", async (req, res, next) => {
+            next(this.controller.forAdmin);
         });
        
-        this.router.get("/account/:id", async (req, res) => {
-            res.json(`user with id = ${req.params.id}  only`);
+        this.router.get("/account/:id", async (req, res, next) => {
+            res.locals.id = req.params.id;
+            next(this.controller.forAccount);
         });
     
     }

@@ -3,40 +3,25 @@ const config = require('../configs/auth.config');
 
 class AuthMiddleware {
 
-    
+    static checkAuth = async (action, req, res, next) => {
 
-    static check = (req, res, next) => {
-        // const routes = {
-        //     0 : ["/auth","/test/visitor"],
-        //     1 : ["/test/user"],
-        //     2 : ["/test/admin"]
-        // }
-        const restrictedRoutes = {
-            "/test/user": (user) => user.role === 1,
-            "/test/admin": (user) => user.role === 2,
-            "/test/account/": (user, params) => user.role > 0 && user.id === params.id,
-        }
-        //console.log(req.originalUrl);
-        const route = Object.keys(restrictedRoutes).find(route => req.originalUrl.match(route));
-        
+        const route = Object.keys(config.RESTRICTED_TOUTES).find(route => req.originalUrl.match(route));
         if(route){
-            const restricted = restrictedRoutes[route];
+            const predicate = config.RESTRICTED_TOUTES[route];
             const auth = req.cookies.auth;
             if(auth){
                 const result = jwt.verify(auth, config.JWT_SECRET);
-                if(result){
-                    
-                    if(restricted && restricted(result, req.params)){
-                        next(); return;
-                    }
+                if(result && predicate(result, res.locals)){
+                    const data = await action(req);
+                    return res.json(data);
                 }
             }
-            //return res.json({result:false, message:"Unauthorized"});
+            return res.json({result:false, message:"Unauthorized access"});
         }
-        next();
-        
+        const data = await action(req);
+        return res.json(data);
         
     }
   
 }
-module.exports = AuthMiddleware.check;
+module.exports = AuthMiddleware.checkAuth;
