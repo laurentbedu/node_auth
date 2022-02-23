@@ -17,9 +17,12 @@ app.use(express.json());
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
+
+
 const routers = require("./api/routers");
+const auth = require("./api/middlewares/auth.middleware");
 for (const route in routers) {
-  app.use(`/${route}`, new routers[route]().router);
+  app.use(`/${route}`, auth, new routers[route]().router);
 }
 
 const PORT = 5000;

@@ -15,8 +15,8 @@ class AuthController extends BaseController {
     if(user){
         const result =  await bcrypt.compare(req.body.password, `${config.HASH_PREFIX + user.password}`);
         if(result){
-            const {email, role} = user;
-            const token = jwt.sign({email, role}, config.JWT_SECRET, { expiresIn: '1d' });
+            const {id, email, role} = user;
+            const token = jwt.sign({id, email, role}, config.JWT_SECRET, { expiresIn: '1d' });
             return {email, role, token, result: true, message: "Bienvenue !"};
         }
         return {result: false, message: "Mot de passe incorrect !"};
